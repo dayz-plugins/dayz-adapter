@@ -1,0 +1,41 @@
+[workspace]
+resolver = "2"
+members = ["crates/dayz-game", "crates/dayz-adapter"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.88"
+license = "Unlicense"
+repository = "https://github.com/dayz-plugins/dayz-adapter"
+
+[workspace.dependencies]
+# uniloader and the address database are sibling checkouts, not published crates: this
+# repository is built against the loader it will run in, and `scripts/build.sh` says so when a
+# path is missing.
+uniloader-sdk = { path = "../../uniloader/crates/uniloader-sdk" }
+uniloader-overlay = { path = "../../uniloader/crates/uniloader-overlay" }
+dayz-data = { path = "../dayz-plugin-loader/crates/dayz-data" }
+dayz-game = { path = "crates/dayz-game" }
+log = "0.4"
+
+[workspace.lints.rust]
+# "deny" rather than "forbid": hooking the engine and reading its objects is unsafe by
+# nature, so those modules allow it with a reason. Everything else stays safe.
+unsafe_code = "deny"
+unsafe_op_in_unsafe_fn = "deny"
+missing_docs = "warn"
+
+[workspace.lints.clippy]
+pedantic = { level = "warn", priority = -1 }
+too_many_lines = "warn"
+unwrap_used = "warn"
+expect_used = "warn"
+undocumented_unsafe_blocks = "warn"
+
+[profile.release]
+lto = true
+codegen-units = 1
+debug = "line-tables-only"
+# Never "abort": a plugin panic must unwind so the loader can catch it at the boundary.
+panic = "unwind"

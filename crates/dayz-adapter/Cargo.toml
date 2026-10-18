@@ -1,0 +1,36 @@
+[package]
+name = "dayz-adapter"
+description = "uniloader adapter plugin for DayZ: the address database, the game's events, chat and remote calls, offered as the `dayz` service."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish = false
+
+[lib]
+# The DLL is `dayz.dll`, and the plugin name is `dayz`.
+name = "dayz"
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+uniloader-sdk.workspace = true
+uniloader-overlay.workspace = true
+dayz-game.workspace = true
+dayz-data.workspace = true
+log.workspace = true
+
+[target.'cfg(windows)'.dependencies]
+windows = { version = "0.62", features = [
+    "Win32_Foundation",
+    "Win32_System_LibraryLoader",
+    "Win32_System_Memory",
+    "Win32_System_ProcessStatus",
+    "Win32_System_Threading",
+] }
+
+[target.'cfg(all(windows, target_env = "msvc"))'.dependencies]
+microseh = "1"
+
+[lints]
+workspace = true
